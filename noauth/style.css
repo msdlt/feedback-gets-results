@@ -1,0 +1,155 @@
+/* Style sheet created by Andrew Kirkpatrick, ACDT, LTG, OUCS (Oxford University) */
+
+/* Standard HTML elements */
+
+body {
+	background-color:#F4F4F4;
+	
+}
+
+ul {
+	list-style-type:square;
+}
+
+table {
+	width:85%;
+}
+
+table.nostyle {
+	width:auto;
+}
+
+.mini {
+	width:auto;
+	padding:0px;
+}
+
+input, textarea, select {
+	border:thin #000048 solid;
+}
+
+input:hover, input:focus, textarea:hover, textarea:focus, select:hover, select:focus {
+	border:thin #CC6633 solid;
+}
+
+input.noborder {
+	border:none;
+
+}
+
+option.highlight {
+	background-color:#000048;
+	color:#F4F4F4;
+}
+
+th {
+	background-color:#000048;
+}
+
+td {
+	background-color:#F4F4F4;
+	padding:1px;
+}
+
+td.nostyle {
+	background:none;
+	padding:0px;	
+}
+
+label {
+	font-style:italic;
+}
+
+p.system {
+	font-family:"Courier New", Courier, monospace;
+}
+
+h1, h2, h3, p, ul, th, td, label, input, textarea {
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:0.8em;
+	color:#000048;
+}
+
+h1 {
+	padding:1px;
+	color:#F4F4F4;
+	background-color:#000048;
+}
+
+h2 {
+	padding:1px;
+	background-color:#9F9FFF;
+}
+
+h3 {
+	padding:1px;
+	background-color:#DDDDFF;
+}
+
+p.data {
+	background-color:#F4F4F4;
+	padding:1px;
+}
+
+a:active, a:visited, a {
+	color:#000048;
+}
+
+a:hover {
+	color:#000048;
+	text-decoration:none;
+}
+
+img {
+	border:none;
+}
+
+/* Custom */
+
+div.main {
+	background-color:white;
+	background-image:url("./images/main.jpg");
+	background-position:bottom right;
+	background-repeat:no-repeat;
+	padding-top:2%;
+	padding-left:2%;
+	padding-right:2%;
+	padding-bottom:2%;
+	margin-top:2%;
+	margin-left:10%;
+	margin-right:10%;
+	margin-bottom:2%;
+	border-color:#000048;
+	border-style:solid;
+	border-width:thick;
+}
+
+div.title {
+	background-image:url("./images/title.gif");
+	height:50px;
+	background-repeat:no-repeat;
+}
+
+div.notice {
+	color:#FF0000;
+}
+
+div.th {
+	color:#E1E1F0;
+	text-align:left;
+}
+
+div.disclaimer {
+	text-align:center;
+}
+
+table.superarchive {
+	width:95%;
+}
+
+#rss {
+
+	clear:both;
+	padding-top:1em;
+
+}

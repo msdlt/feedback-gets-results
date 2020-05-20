@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rss version="2.0">
+<channel>
+
+<title>Feedback gets Results</title>
+<description>Coursework and Examination Results for the Medical Sciences Division</description>
+<link>http://fgr.medsci.ox.ac.uk</link>
+<language>en</language>
+<copyright>Content: 2007 onwards, Medical Sciences Division; Development: 2006-2007, Oxford University Computing Services</copyright>
+
+<item>
+	<title>sdfsdfsdf</title>
+	<description>sdfsdfsdf, taught by Andrew Kirkpatrick (OUCS) is now available (22nd May 2007)</description>
+	<link>https://fgr.medsci.ox.ac.uk</link>
+	</item><item>
+	<title>BANG!</title>
+	<description>BANG!, taught by Andrew Kirkpatrick (OUCS) is now available (22nd May 2007)</description>
+	<link>https://fgr.medsci.ox.ac.uk</link>
+	</item><item>
+	<title>Does cron work?</title>
+	<description>Does cron work?, taught by Andrew Kirkpatrick (OUCS) is now available (22nd May 2007)</description>
+	<link>https://fgr.medsci.ox.ac.uk</link>
+	</item><item>
+	<title>sdgfgdfgdfg</title>
+	<description>sdgfgdfgdfg, taught by Andrew Kirkpatrick (OUCS) is now available (18th May 2007)</description>
+	<link>https://fgr.medsci.ox.ac.uk</link>
+	</item><item>
+	<title>Test 1</title>
+	<description>Test 1, taught by Andrew Kirkpatrick (OUCS) is now available (10th May 2007)</description>
+	<link>https://fgr.medsci.ox.ac.uk</link>
+	</item>
+
+</channel>
+</rss>

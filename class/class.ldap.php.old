@@ -1,0 +1,86 @@
+<?php
+
+class ldap {
+
+	private $_connection;
+	
+	function __construct(){
+	
+		$this->_connection = ldap_connect(ldap_host);
+		
+		if (! $this->_connection) {
+			return "Unable to connect to LDAP.";
+		}	
+		
+		if (! ldap_bind($this->_connection)) {
+			return "Unable to bind to LDAP.";
+		}
+	}
+	
+	function search($criteria){
+		
+		$search = ldap_search($this->_connection, "", "oxfordUsername=".$criteria);
+		$data = ldap_get_entries($this->_connection, $search);
+		
+		return $data;
+		
+	}
+	
+/*	function returnName($heraldid){
+	
+		$name = $this->search($heraldid);
+		return $name[0]["fullname"];
+		
+	}
+	
+	function returnEmail($heraldid){
+	
+		$email = $this->search($heraldid);
+		return $email[0]["oxfordemail"];
+		
+	} */
+	
+	function returnUser($heraldid){
+	
+		$user = $this->search($heraldid);
+		
+		//If LDAP search finds record, assume student and return
+		if (! empty($user[0])){ 
+			$array[] = $user[0]["fullname"][0];
+			$array[] = $user[0]["ou"][0];
+			$array[] = $user[0]["oxfordemail"][0];
+			$array[] = 1;
+		} else {
+		//Else assume local user, return as above plus privlige id
+			unset($user);
+			$user = new local();
+			$sql = $user->selectQuery("usr_name, usr_dept, usr_email, prv_id", "users", "heraldid = '".$heraldid."'");
+			if (mysql_num_rows($sql) == 0){
+				$array[] = $heraldid;
+				$array[] = "Unknown";
+				$array[] = "Unknown";
+				$array[] = 1;			
+			} else {
+				$data = mysql_fetch_array($sql);
+				$array[] = $data['usr_name'];
+				$array[] = $data['usr_dept'];
+				$array[] = $data['usr_email'];
+				$array[] = $data['prv_id'];		
+			}
+			
+			//If user is not found via LDAP or local
+		}
+		
+		return $array;		
+	
+	}
+	
+	function __destruct(){
+		if (! ldap_close($this->_connection)) {
+			return "Unable to disconnect from LDAP.";
+		}
+	}
+	
+}
+
+?>

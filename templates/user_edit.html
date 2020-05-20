@@ -1,0 +1,25 @@
+<p>Please enter the required details below.</p>
+<form name="user_edit" method="post" action="{{link}}">
+    <input name="heraldid" type="text" id="heraldid" value="{{heraldid}}" size="40" maxlength="8">
+  <label>Oxford Username</label><br />
+  <br />
+	  <input name="name" type="text" id="name" value="{{name}}" size="40" maxlength="128">
+    <label> Name</label><br /><br />
+	
+  	<input name="dept" type="text" id="dept" value="{{dept}}" size="40" maxlength="128">
+<label>Department
+</label><br />
+<br />
+<input name="email" type="text" id="email" value="{{email}}" size="40" maxlength="128">
+<label>Email</label>
+<br />
+<br />
+    <select name="pri" id="pri">
+      <option value="1"{{one}}>Student</option>
+      <option value="2"{{two}}>Administrator</option>
+      <option value="3"{{three}}>Super Administrator</option>
+    </select>
+    <label>Access</label>
+    <br /><br />
+   <input type="submit" name="submit" value="{{button}}">{{delete}}
+</form>

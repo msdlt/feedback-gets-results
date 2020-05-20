@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script language="javascript" type="text/javascript" src="tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+	<script language="javascript" type="text/javascript">
+		// Notice: The simple theme does not use all options some of them are limited to the advanced theme
+		tinyMCE.init({
+			mode : "textareas",
+			theme : "simple"
+		});
+	</script>
+	<script language="javascript" src="inc/calendar.js"></script>
+<title>Feedback gets Results</title>
+<link href="./style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<div class="main">
+  <div class="title"></div>
+  <p><strong>{{hello}}</strong> <a href="./?logout">Logout</a></p>
+  <p>{{date}}</p>
+  {{content}}
+  </div>
+<div class="disclaimer">
+  <p>  Developed by the <a href="http://www.oucs.ox.ac.uk/acdt/">Academic Computing Development Team</a> in conjuction with Medical Sciences Division Learning Technologies<br />
+  &copy; Oxford University 2007</p>
+</div>
+</body>
+</html>

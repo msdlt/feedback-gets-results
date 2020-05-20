@@ -1,0 +1,28 @@
+<p><em>Step 3 of 3</em></p>
+<form action="./?res&add" method="post" name="addres2">
+  <p>Is Feedback compulsory for Results to be obtained?</p>
+    <input disabled name="compulsory" type="radio" value="1" checked="checked" />
+    <label>Yes</label><br />
+  <input disabled name="compulsory" type="radio" value="0" />
+    <label>No</label></p>
+  <p>Results can be withheld from students until feedback is given on the Survey. Submitting feedback on the Survey on the  Medical Sciences Division Feedback System the results will become available on Feedback gets Results. If feedback is optional, the feedback will serve only as a statistic.</p>
+</form>
+<form action="./?res&add" method="post" name="addres2">
+<p>Do you wish to set Reminders?</p>
+  <input type="submit" name="addrem" value="Add" />
+  <label>
+  <select name="remdate">
+    <option value="0" selected="selected">-----</option>
+    {{remdata}}
+  </select>
+  <input name="compulsory" type="hidden" value="1" />
+<input name="addres" type="hidden" value="3" />
+</form>
+  <p>
+  Reminders are automatically sent by Feedback gets Results on the date specified to any student who has not currently submitted feedback, and thus not viewed their results. An email is sent to the student's registered email address, containing either a default message, or a custom message which can be specified below.</p>
+  <p>{{remstats}}</p>
+  <p>{{reminders}}</p>
+<form action="./?res&add" method="post" name="addres2">
+  <input type="hidden" name="addres" value="3" />
+  <input type="submit" name="Submit" value="Next" />
+</form>
