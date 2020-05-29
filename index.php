@@ -3,8 +3,8 @@
 session_start();
 require_once("./inc/header.inc");
 
-error_reporting(0); //Error settings for LIVE
-//error_reporting(E_ALL); //Error settings for DEBUG
+//error_reporting(0); //Error settings for LIVE
+error_reporting(E_ALL); //Error settings for DEBUG
 
 /*print '<p>Start session dump:</p>';
 print_r($_SESSION);
