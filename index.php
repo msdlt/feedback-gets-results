@@ -384,7 +384,7 @@ if(isset($_GET['not'])){
 
 //LOGOUT
 if(isset($_GET['logout'])){
-	echo "I'm here"
+	echo "I'm here";
 	session_destroy();
 	header("Location: https://webauth.ox.ac.uk/logout");
 }
