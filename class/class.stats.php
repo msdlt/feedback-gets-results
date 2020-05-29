@@ -44,7 +44,7 @@ function statResultsetCount(){
 //Returns number of Resultsets in Feedback gets Results
 
 	$sql = $this->_local->selectQuery("count(res_id)", "resultsets");
-	$data = mysql_fetch_row($sql);
+	$data = mysqli_fetch_row($sql);
 	
 	return $data[0];
 
@@ -55,10 +55,10 @@ function statResultsetActive(){
 
 $sql = $this->_local->selectQuery("surveyinstanceid", "resultsets");
 $sql2 = $this->_remote->selectQuery("surveyInstanceID", "SurveyInstances", "finishDate > NOW() OR finishDate IS NULL");
-while ($remotedata = mysql_fetch_array($sql2)){
+while ($remotedata = mysqli_fetch_array($sql2)){
 	$remaining[] = $remotedata['surveyInstanceID'];
 }
-while ($localdata = mysql_fetch_array($sql)){
+while ($localdata = mysqli_fetch_array($sql)){
 	if (in_array($localdata['surveyinstanceid'], $remaining)){
 		$i++;
 	}
@@ -72,7 +72,7 @@ function statSurveyInstanceCount(){
 //Returns number of Survey Instances in MSD Feedback. Result should be less than or equal to statResultsetCount
 
 	$sql = $this->_remote->selectQuery("count(surveyInstanceID)", "SurveyInstances");
-	$data = mysql_fetch_row($sql);
+	$data = mysqli_fetch_row($sql);
 	
 	return $data[0];
 
@@ -82,7 +82,7 @@ function statSurveyInstanceActive(){
 //Returns number of active Survey Instances in MSD Feedback. Result should be less than or equal to statResultsetCount
 
 	$sql = $this->_remote->selectQuery("count(surveyInstanceID)", "SurveyInstances", "finishDate > NOW() OR finishDate IS NULL");
-	$data = mysql_fetch_row($sql);
+	$data = mysqli_fetch_row($sql);
 	
 	return $data[0];
 
@@ -91,7 +91,7 @@ function statSurveyInstanceActive(){
 function statReminderCount(){
 
 	$sql = $this->_local->selectQuery("count(rem_id)", "reminders");
-	$data = mysql_fetch_row($sql);
+	$data = mysqli_fetch_row($sql);
 	
 	return $data[0];
 
@@ -100,7 +100,7 @@ function statReminderCount(){
 function statUserCount($pri){
 
 	$sql = $this->_local->selectQuery("count(heraldid)", "users", "prv_id = ".$pri);
-	$data = mysql_fetch_row($sql);
+	$data = mysqli_fetch_row($sql);
 	
 	return $data[0];
 

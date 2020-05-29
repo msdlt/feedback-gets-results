@@ -6,18 +6,19 @@ class ldap {
 	
 	function __construct(){
 	
-	$this->_remote = mysql_connect(carddata_host, carddata_user, carddata_password);
+	$this->_remote = mysqli_connect(carddata_host, carddata_user, carddata_password, carddata_database);
 	//$this->_remote = mysql_connect("netman3.imsu.ox.ac.uk", "mstcunivcard", "univcardmstc");
 		
 		if (! $this->_remote) {
 			return "Unable to connect to database.";
 		}
 		
-		if (! mysql_select_db(carddata_database)) {
-			return "Unable to select Feedback gets Results database.";
-		}
+		//if (! mysql_select_db(carddata_database)) {
+		//	return "Unable to select Feedback gets Results database.";
+		//}
 		
-		mysql_query("SET NAMES 'utf8'");
+		//mysql_query("SET NAMES 'utf8'");
+		mysqli_set_charset($this->_remote, 'utf8mb4');
 		
 	}
 	
@@ -41,12 +42,12 @@ class ldap {
 	
 	function returnUser($heraldid){
 	
-		$sql = mysql_query("select Firstname, Lastname, Username, Email, Dept from cards where Username = '".$heraldid."'", $this->_remote);
+		$sql = mysqli_query($this->_remote, "select Firstname, Lastname, Username, Email, Dept from cards where Username = '".$heraldid."'");
 		//echo "select Firstname, Lastname, Username, Email, Dept from cards where Username = '".$heraldid."'";
 		
 		//echo "i found ".mysql_num_rows($sql)." rows ";
 		
-		if (mysql_num_rows($sql) <= 0){
+		if (mysqli_num_rows($sql) <= 0){
 		//if (1 == 0){
 			$array[] = $heraldid;
 			$array[] = "Unknown";
@@ -63,7 +64,7 @@ class ldap {
 			
 			$user = new local();
 			
-			while ($data = mysql_fetch_array($sql)){
+			while ($data = mysqli_fetch_array($sql)){
 			
 				$username = $data['Firstname']." ".$data['Lastname'];
 				$dept = $data['Dept'];
@@ -74,7 +75,7 @@ class ldap {
 			//print $username." ".$dept." ".$email." ";
 			
 			$sql2 = $user->selectQuery("usr_name, usr_dept, usr_email, prv_id", "users", "heraldid = '".$heraldid."'");
-			if (mysql_num_rows($sql2) <= 0){
+			if (mysqli_num_rows($sql2) <= 0){
 				$array[] = $username;
 				$array[] = $dept;
 				$array[] = $email;
@@ -84,7 +85,7 @@ class ldap {
 			//print_r($array);	
 			//exit();		
 			} else {
-				$data2 = mysql_fetch_array($sql2);
+				$data2 = mysqli_fetch_array($sql2);
 				$array[] = $data2['usr_name'];
 				$array[] = $data2['usr_dept'];
 				$array[] = $data2['usr_email'];
@@ -105,7 +106,7 @@ class ldap {
 	
 	function __destruct(){
 		//print "<p>Attempting to close MySQL connection...</p>";
-		if (! mysql_close($this->_remote)) {
+		if (! mysqli_close($this->_remote)) {
 			return "Unable to disconnect from database.";
 		}
 	}

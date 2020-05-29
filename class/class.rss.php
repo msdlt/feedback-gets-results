@@ -13,7 +13,7 @@ $remote = new remote();
 $sql = $local->selectQuery('res_name, res_timestamp, surveyinstanceid, usr_name, usr_dept', 
 'resultsets AS r INNER JOIN users AS u ON r.heraldid = u.heraldid ORDER BY res_timestamp DESC LIMIT 20');
 
-while ($data = mysql_fetch_array($sql)){
+while ($data = mysqli_fetch_array($sql)){
 
 	$finishDate = $remote->finishDate($data['surveyinstanceid']);
 	
@@ -34,7 +34,7 @@ while ($data = mysql_fetch_array($sql)){
 if (! $template = fopen("/srv/www/fgr/templates/rss.xml", "r")){
 	$element = '<p>Template cannot be found</p>'; //Replace with better error messages
 } else {
-	if (mysql_num_rows($sql) > 0){
+	if (mysqli_num_rows($sql) > 0){
 		$element = fread($template, filesize("/srv/www/fgr/templates/rss.xml"));
 		$element = preg_replace("/{{rss}}/i", $this->_items, $element);
 	} else {

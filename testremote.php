@@ -6,15 +6,16 @@ define("remote_password", "selmstcfb");
 define("remote_database", "mstcfeedback");
 
 
-$conn = mysql_connect(remote_host, remote_user, remote_password);
+$conn = mysqli_connect(remote_host, remote_user, remote_password, remote_database);
 		
-	mysql_select_db(remote_database);
+	//mysql_select_db(remote_database);
 					
-		mysql_query("SET NAMES 'utf8'");
+		//mysql_query("SET NAMES 'utf8'");
+		mysqli_set_charset($conn, 'utf8mb4');
 		
-		$sql = mysql_query("SELECT Firstname, Lastname, Username, Email, Dept FROM cards");
+		$sql = mysqli_query($conn, "SELECT Firstname, Lastname, Username, Email, Dept FROM cards");
 		
-		while ($data = mysql_fetch_array($sql)){
+		while ($data = mysqli_fetch_array($sql)){
 			
 			print_r($data);
 						

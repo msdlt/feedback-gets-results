@@ -124,7 +124,7 @@ class reminder {
 		<input name="rem" type="hidden" value="null" />
 		<select name="user" id="user">';
 		
-		while ($data = mysql_fetch_array($sql)){
+		while ($data = mysqli_fetch_array($sql)){
 			//If the user is not set, assume the first user
 			if ($heraldid == null){
 				$heraldid = $data['heraldid'];
@@ -155,7 +155,7 @@ class reminder {
 	
 	$html = $this->userRangeReminders($heraldid);
 	
-	if (mysql_num_rows($sql) == 0){
+	if (mysqli_num_rows($sql) == 0){
 	
 	$html .= '<p>No Reminders to display.</p>';
 	
@@ -165,7 +165,7 @@ class reminder {
 	<th><div class="th">Date</div></th>
 	<th><div class="th">Message</div></th></tr>';
 	
-	while ($data = mysql_fetch_array($sql)){
+	while ($data = mysqli_fetch_array($sql)){
 	
 		if ($data['rem_message'] == "NULL"){
 			$msg = '<em>Default</em>';
@@ -191,16 +191,16 @@ class reminder {
 	
 	$local = new local();
 	$sql = $local->selectQuery("res_id, res_name", "resultsets", "heraldid = '".$heraldid."'");
-	while ($data = mysql_fetch_array($sql)){
+	while ($data = mysqli_fetch_array($sql)){
 		$html .= '<p><strong>'.$data['res_name'].'</strong></p>';
 		$sql2 = $local->selectQuery("rem_id, rem_date, rem_message", "reminders", "res_id = ".$data['res_id']);
-		if (mysql_num_rows($sql2) == 0){
+		if (mysqli_num_rows($sql2) == 0){
 			$html .= '<p>No reminders for this resultset</p>';
 		} else{
 		$html .= '<table><tr><th><div class="th">Resultset</div></th>
 	<th><div class="th">Date</div></th>
 	<th><div class="th">Message</div></th></tr>';
-			while ($data2 = mysql_fetch_array($sql2)){
+			while ($data2 = mysqli_fetch_array($sql2)){
 				if ($data2['rem_message'] == "NULL"){
 					$msg = '<em>Default</em>';
 				} else {
@@ -226,7 +226,7 @@ return $html;
 		$action = "./?rem=".$rem."&edit";
 		$local = new local();
 		$sql = $local->selectQuery("rem_date, rem_message, surveyinstanceid", "reminders inner join resultsets on reminders.res_id = resultsets.res_id", "rem_id = ".$rem);
-		while ($data = mysql_fetch_array($sql)){
+		while ($data = mysqli_fetch_array($sql)){
 			//$date = $data['rem_date'];
 			$msg = $data['rem_message'];
 			$datelist = $this->availReminders($data['surveyinstanceid'], strtotime($data['rem_date']));
@@ -270,7 +270,7 @@ return $html;
 	if ($virtual == null){
 		$local = new local();
 		$sql = $local->selectQuery("rem_date", "reminders", "rem_id = ".$rem);
-		$data = mysql_fetch_array($sql);
+		$data = mysqli_fetch_array($sql);
 		return strtotime($data['rem_date']);
 	} else {
 		return $_SESSION['resultset']['reminders'][$rem]['remdate'];

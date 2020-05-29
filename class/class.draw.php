@@ -292,7 +292,7 @@ class draw {
 		$sql_alldates = $local->selectQuery("DISTINCT year(res_timestamp)", "resultsets ORDER BY res_timestamp DESC");
 	}
 	
-	while ($alldates = mysql_fetch_array($sql_alldates)){
+	while ($alldates = mysqli_fetch_array($sql_alldates)){
 		//if (! array_search($alldates['res_id'], $currentres)){
 			$years[] = 	$alldates['year(res_timestamp)'];
 		//}
@@ -318,7 +318,7 @@ class draw {
 		   <input type="hidden" name="arch" value="null" />
 		  </form>';
 		  
-		if (mysql_num_rows($sql_alldates) == 0){
+		if (mysqli_num_rows($sql_alldates) == 0){
 			$html = 'No Resultsets found.';
 		}
 		
@@ -328,7 +328,7 @@ class draw {
 	} else {
 		$sql_alldates = $local->selectQuery("DISTINCT month(res_timestamp)", "resultsets", "year( res_timestamp ) = ".$dateyear." ORDER BY res_timestamp ASC");
 	}
-	while ($alldates = mysql_fetch_array($sql_alldates)){
+	while ($alldates = mysqli_fetch_array($sql_alldates)){
 		//if (! array_search($allmonths['res_id'], $currentres)){
 			$months[] = $alldates['month(res_timestamp)'];
 		//}
@@ -354,7 +354,7 @@ class draw {
 			   		   			   
 			  $html .= '</form>';
 	
-	if (mysql_num_rows($sql_alldates) == 0){
+	if (mysqli_num_rows($sql_alldates) == 0){
 			$html = 'No Resultsets found.';
 		}
 	
@@ -419,7 +419,7 @@ class draw {
 		$html = '<form name="select_res" method="post" action="./?rem=null&add">
 		<select name="res">';
 		
-		while ($data = mysql_fetch_array($sql)){
+		while ($data = mysqli_fetch_array($sql)){
 			$html .= '<option value="'.$data['res_id'].'">'.$data['res_name'].'</option>';
 		}
 		
@@ -427,7 +427,7 @@ class draw {
 			<input type="submit" name="Submit" value="Select" />
 		</form>';
 		
-		if (mysql_num_rows($sql) == 0){
+		if (mysqli_num_rows($sql) == 0){
 			return "<p>No Resultsets Found</p>";
 		} else {
 			return $html;
@@ -456,13 +456,13 @@ class draw {
 		
 		//$sql = mysql_query("SELECT res_name, res_timestamp FROM resultsets WHERE heraldid = '".$user."'");
 		$flag = 0;
-		while ($data = mysql_fetch_array($sql)){
+		while ($data = mysqli_fetch_array($sql)){
 			
 			$sql6 = $local->selectQuery("users.heraldid, usr_name, usr_dept, usr_email, prv_id", 
 			"users inner join resultsetstudents on users.heraldid = resultsetstudents.heraldid", "res_id = ".$data['res_id']);
 			
 			$sql7 = $remote->selectQuery("surveyInstanceID", "SurveyInstances", "surveyInstanceID = ".$data['surveyinstanceid']); //Check if can find in Feedback System
-			if (mysql_num_rows($sql7) == 0){
+			if (mysqli_num_rows($sql7) == 0){
 				$data5 = array();
 				$x = "?";
 				$finishDate = "Unknown";
@@ -470,18 +470,18 @@ class draw {
 			} else {
 				$sql5 = $remote->selectQuery("heraldID", "SurveyInstanceParticipants", "surveyInstanceID = ".$data['surveyinstanceid']." AND status = 2"); //RABBIT
 				$thingies = array();
-				while ($data5 = mysql_fetch_array($sql5)){
+				while ($data5 = mysqli_fetch_array($sql5)){
 					$thingies[] = $data5['heraldID'];
 				}
 				$x = 0;
-				while ($data4 = mysql_fetch_array($sql6)){
+				while ($data4 = mysqli_fetch_array($sql6)){
 					if (in_array($data4['heraldid'], $thingies)){
 						$x++;
 					}
 				}
 				
 				$sql3 = $remote->selectQuery("finishDate", "SurveyInstances", "surveyInstanceID = ".$data['surveyinstanceid']);
-				while ($data3 = mysql_fetch_array($sql3)){
+				while ($data3 = mysqli_fetch_array($sql3)){
 					if ($data3['finishDate'] == ''){
 						$finishDate = "Unknown";
 						$finishDateRaw = null;
@@ -559,7 +559,7 @@ class draw {
 		$local = new local();
 		$sql = $local->selectQuery("heraldid, usr_name, usr_dept", "users", "prv_id > 1");
 		
-		while ($data = mysql_fetch_array($sql)){
+		while ($data = mysqli_fetch_array($sql)){
 			$html .= '<p><strong>'.$data['usr_name'].', '.$data['usr_dept'].'</strong></p>';
 			if ($dateyear != null || $datemonth != null){
 				$html .= $this->listResultsets($data['heraldid'], $dateyear, $datemonth);
@@ -594,13 +594,13 @@ class draw {
 			//echo "<h2>SELECT i.surveyInstanceID FROM SurveyInstanceParticipants as p INNER JOIN SurveyInstances as i ON p.surveyInstanceID = i.surveyInstanceID WHERE heraldID = '".$user."' AND status = 2 AND finishDate > NOW() OR heraldID = '".$user."' AND status = 2 AND finishDate IS NULL</h2>";
 		
 		//If there are any do stuff
-		$x = mysql_num_rows($sql2);
+		$x = mysqli_num_rows($sql2);
 
 		if ($x > 0){
 		
 			
 			//Create SQL string for IN comparison in WHERE clause
-			while ($surveyinstances = mysql_fetch_array($sql2)){
+			while ($surveyinstances = mysqli_fetch_array($sql2)){
 				$i++;
 					$search .= $surveyinstances['surveyInstanceID'];
 				if ($i != $x){ //If not last heraldid, add a seperator
@@ -619,7 +619,7 @@ class draw {
 			
 			//echo "<h2>SELECT resultsets.res_id, res_name, resultsets.surveyinstanceid FROM resultsets inner join resultsetstudents on resultsets.res_id = resultsetstudents.res_id WHERE resultsetstudents.heraldid = '".$user."' and resultsets.surveyinstanceid in (".$search.")</h2>";
 			
-			while($data = mysql_fetch_array($sql)){
+			while($data = mysqli_fetch_array($sql)){
 			
 				if (! isset($avail)){
 					$i = 0;
@@ -647,13 +647,13 @@ class draw {
 		$sql3 = $local->selectQuery("resultsets.res_id, res_name, resultsets.surveyinstanceid", 
 			"resultsets inner join resultsetstudents on resultsets.res_id = resultsetstudents.res_id", 
 			"resultsetstudents.heraldid = '".$user."' and resultsets.surveyinstanceid not in (".$search.")");
-		$y = mysql_num_rows($sql3);
+		$y = mysqli_num_rows($sql3);
 		
 		//echo "<h2>SELECT resultsets.res_id, res_name, resultsets.surveyinstanceid FROM resultsets inner join resultsetstudents on resultsets.res_id = resultsetstudents.res_id WHERE resultsetstudents.heraldid = '".$user."' and resultsets.surveyinstanceid not in (".$search.")</h2>";
 
 		if ($y > 0){
 				
-			while ($surveyincomplete = mysql_fetch_array($sql4)){
+			while ($surveyincomplete = mysqli_fetch_array($sql4)){
 				$i++;
 				$search2 .= $surveyincomplete['surveyInstanceID'];
 				if ($i != $y){ //If not last heraldid, add a seperator
@@ -664,7 +664,7 @@ class draw {
 			//print '<b>y yes</b>';			
 			//Find Resultsets that the user is on, and that match the list of completed Survey Instances
 			
-			while($data3 = mysql_fetch_array($sql3)){
+			while($data3 = mysqli_fetch_array($sql3)){
 				
 				if (! isset($nonavail)){
 					$i = 0;
@@ -777,13 +777,13 @@ class draw {
 		
 		$sql2 = $local->selectQuery("prv_id, prv_name", "priviliges".$where." ORDER BY prv_id DESC");
 				
-		while ($data2 = mysql_fetch_array($sql2)){
+		while ($data2 = mysqli_fetch_array($sql2)){
 		
 		$sql = $local->selectQuery("heraldid, usr_name, usr_dept, prv_id, usr_email", "users", "prv_id = ".$data2['prv_id']." ORDER BY usr_name, usr_dept");
 		
 			if ($data2['prv_id'] == 1 && $acc != 1){
 			
-			$num = mysql_num_rows($sql);
+			$num = mysqli_num_rows($sql);
 			if ($num != 0){
 				$html .= '<p><a href="./?acc=1">View '.$num.' Users</p>';
 			} else {
@@ -792,7 +792,7 @@ class draw {
 			
 			} else {
 			
-			if (mysql_num_rows($sql) != 0){
+			if (mysqli_num_rows($sql) != 0){
 			
 				$html .= '<p><strong>'.$data2['prv_name'].'</strong></p><table>
 				<tr>
@@ -801,7 +801,7 @@ class draw {
 				  <th><div class="th">Email</div></th>		
 				</tr>';
 				
-				while ($data = mysql_fetch_array($sql)){
+				while ($data = mysqli_fetch_array($sql)){
 					if ($acc == 1){
 						$html .= '<tr>
 					      <td>'.$data['usr_name'].' (<em>'.$data['heraldid'].'</em>)</td>

@@ -8,17 +8,19 @@ class local implements database {
 	
 		//set_magic_quote_runtime(1);
 		//print "<p>Attempting to open MySQL connection...</p>";
-		$this->_local = mysql_connect(local_host, local_user, local_password);
+		//$this->_local = mysql_connect(local_host, local_user, local_password, local_database);
+		$this->_local = mysqli_connect(local_host, local_user, local_password, local_database);
 		
 		if (! $this->_local) {
 			return "Unable to connect to database.";
 		}
 		
-		if (! mysql_select_db(local_database, $this->_local)) {
-			return "Unable to select Feedback gets Results database.";
-		}
+		//if (! mysql_select_db(local_database, $this->_local)) {
+		//	return "Unable to select Feedback gets Results database.";
+		//}
 		
-		mysql_query("SET NAMES 'utf8'");
+		//mysql_query("SET NAMES 'utf8'");
+		mysqli_set_charset($this->_local, 'utf8mb4');
 		
 		
 		//print("<h1>Local Connection Created</h1>");
@@ -29,11 +31,11 @@ class local implements database {
 	function selectQuery($fields, $from, $where = null) {
 		if ($where == null){
 			//echo "SELECT ".$fields." FROM ".$from;//echo "<p>SELECT ".$fields." FROM ".$from."</p>";
-			return mysql_query("SELECT ".$fields." FROM ".$from, $this->_local);
+			return mysqli_query($this->_local, "SELECT ".$fields." FROM ".$from);
 			
 		} else {
 			//echo "SELECT ".$fields." FROM ".$from." WHERE ".$where;//print "<p>SELECT ".$fields." FROM ".$from." WHERE ".$where."</p>";
-			return mysql_query("SELECT ".$fields." FROM ".$from." WHERE ".$where, $this->_local);
+			return mysqli_query($this->_local, "SELECT ".$fields." FROM ".$from." WHERE ".$where);
 			
 		}
 		//return mysql_fetch_array($sql);
@@ -42,16 +44,16 @@ class local implements database {
 	function countQuery($field, $from, $where = null){
 	//Counts the number of records in a table, optionally based on criteria; Returns integer
 		if ($where == null){
-			$sql = mysql_query("SELECT COUNT(".$field.") FROM ".$from, $this->_local);
-			$data = mysql_fetch_row($sql);
+			$sql = mysqli_query($this->_local, "SELECT COUNT(".$field.") FROM ".$from);
+			$data = mysqli_fetch_row($sql);
 			if (! $sql){
 				return 0;
 			} else {
 				return $data[0];
 			}
 		} else {
-			$sql = mysql_query("SELECT COUNT(".$field.") FROM ".$from." WHERE ".$where, $this->_local);
-			$data = mysql_fetch_row($sql);
+			$sql = mysqli_query($this->_local, "SELECT COUNT(".$field.") FROM ".$from." WHERE ".$where);
+			$data = mysqli_fetch_row($sql);
 			if (! $sql){
 				return 0;
 			} else {
@@ -67,28 +69,28 @@ class local implements database {
 		case 1:
 		//Adding Resultset
 			
-				$sql = mysql_query("LOCK TABLE resultsets WRITE", $this->_local);
+				$sql = mysqli_query($this->_local, "LOCK TABLE resultsets WRITE");
 				if (! $sql){
 					return "Unable to lock tables";
 				}
 				
-				$sql2 = mysql_query("INSERT INTO `resultsets` ( `res_id` , `heraldid` , `surveyinstanceid` , `res_name` , `res_timestamp` )
+				$sql2 = mysqli_query($this->_local, "INSERT INTO `resultsets` ( `res_id` , `heraldid` , `surveyinstanceid` , `res_name` , `res_timestamp` )
 				VALUES (
-				NULL , '".$_SESSION['user']."', '".$resultset['surveyInstance']."', '".mysql_real_escape_string($resultset['name'], $this->_local)."', NOW( )
-				)", $this->_local);
+				NULL , '".$_SESSION['user']."', '".$resultset['surveyInstance']."', '".mysqli_real_escape_string($this->_local, $resultset['name'])."', NOW( )
+				)");
 				if (! $sql2){
 					return "Unable to insert values";
 				}
 				
-				$sql3 = mysql_query("SELECT LAST_INSERT_ID()", $this->_local);
+				$sql3 = mysqli_query($this->_local, "SELECT LAST_INSERT_ID()");
 				if (! $sql3){
 					return "Unable to select last auto increment";
 				}
-				while ($data = mysql_fetch_row($sql3)){
+				while ($data = mysqli_fetch_row($sql3)){
 					$_SESSION['res_id'] = $data[0];
 				}
 				
-				$sql4 = mysql_query("UNLOCK TABLES", $this->_local);
+				$sql4 = mysqli_query($this->_local, "UNLOCK TABLES");
 				if (! $sql4){
 					return "Unable to unlock tables";
 				}
@@ -103,7 +105,7 @@ class local implements database {
 				
 				//return "Resultset added successfully";
 				
-				$sql5 = mysql_query("LOCK TABLE resultsetfields WRITE", $this->_local);
+				$sql5 = mysqli_query($this->_local,"LOCK TABLE resultsetfields WRITE");
 				if (! $sql5){
 					return "Unable to lock tables";
 				}
@@ -121,9 +123,9 @@ class local implements database {
 				for ($i = 1; $i <= 3; $i++) { //CLOWNS
 						if ($resultset['cells'][$i][$j] != null){
 														
-							$sql6 = mysql_query("INSERT INTO `resultsetfields` ( `rsf_id` , `res_id` , `rsf_title` , `rsf_heading` , `rsf_offset` )
+							$sql6 = mysqli_query($this->_local,"INSERT INTO `resultsetfields` ( `rsf_id` , `res_id` , `rsf_title` , `rsf_heading` , `rsf_offset` )
 							VALUES (
-							NULL , ".$_SESSION['res_id'].", '".mysql_real_escape_string($resultset['cells'][$i][$j], $this->_local)."', ".$i.", ".$j.")", $this->_local);
+							NULL , ".$_SESSION['res_id'].", '".mysqli_real_escape_string($this->_local, $resultset['cells'][$i][$j])."', ".$i.", ".$j.")");
 							if (! $sql6){
 								return "Unable to insert values";
 							}
@@ -131,11 +133,11 @@ class local implements database {
 							//If either H1 or H2 (H3 cannot be a parent header because it is the lowest level)
 							if ($i != 3){
 								//Select the rsf_id of that header, to set as the parent header of the 
-								$sql7 = mysql_query("SELECT LAST_INSERT_ID()", $this->_local);
+								$sql7 = mysqli_query($this->_local,"SELECT LAST_INSERT_ID()");
 								if (! $sql7){
 									return "Unable to select last auto increment";
 								}
-								while ($data = mysql_fetch_row($sql7)){
+								while ($data = mysqli_fetch_row($sql7)){
 									switch($i){
 									case 1:					
 										$parent1 = $data[0];
@@ -152,7 +154,7 @@ class local implements database {
 					}
 				}
 				
-				$sql8 = mysql_query("UNLOCK TABLES", $this->_local);
+				$sql8 = mysqli_query($this->_local,"UNLOCK TABLES");
 				if (! $sql8){
 					return "Unable to unlock tables";
 				}
@@ -172,27 +174,27 @@ class local implements database {
 					if ($resultset['cells'][$i][1] != "" || $resultset['cells'][$i][1] != null){
 					//print "<p><b><i>dollar i = ".$i."</i></b></p>";
 					//print "<p>".$resultset['cells'][$i][1]."</p>";
-					$sql9 = mysql_query("INSERT INTO `resultsetstudents` ( `rss_id` , `res_id` , `heraldid` )
+					$sql9 = mysqli_query($this->_local,"INSERT INTO `resultsetstudents` ( `rss_id` , `res_id` , `heraldid` )
 					VALUES (
 					NULL , '".$_SESSION['res_id']."', '".$resultset['cells'][$i][1]."'
-					)", $this->_local);
+					)");
 					if (! $sql9){
 						//return "Unable to insert fields";
 					}
 					
-					$sql10 = mysql_query("SELECT LAST_INSERT_ID()", $this->_local);
+					$sql10 = mysqli_query($this->_local,"SELECT LAST_INSERT_ID()");
 					if (! $sql10){
 						return "Unable to select last auto increment";
 					}
-					while ($data = mysql_fetch_row($sql10)){
+					while ($data = mysqli_fetch_row($sql10)){
 						$student = $data[0];
 					}		
 								
 					for ($j = 2; $j <= $resultset['numCols']; $j++) {
-						$sql11 = mysql_query("INSERT INTO `resultsetfieldsdata` ( `rsd_id` , `res_id` , `rsf_offset` , `rss_id` , `rsd_value` )
+						$sql11 = mysqli_query($this->_local,"INSERT INTO `resultsetfieldsdata` ( `rsd_id` , `res_id` , `rsf_offset` , `rss_id` , `rsd_value` )
 						VALUES (
-						NULL , '".$_SESSION['res_id']."', '".$j."', '".$student."', '".mysql_real_escape_string($resultset['cells'][$i][$j], $this->_local)."'
-						)", $this->_local);
+						NULL , '".$_SESSION['res_id']."', '".$j."', '".$student."', '".mysqli_real_escape_string($this->_local, $resultset['cells'][$i][$j])."'
+						)");
 						if (! $sql11){
 						return "Unable to insert fields";
 						}
@@ -212,7 +214,7 @@ class local implements database {
 						$e = $this->countQuery("heraldid", "users", "heraldid = '".$resultset['cells'][$i][1]."'");
 						//If user already exists in the system , delete them first
 						if ($e > 0){
-							$sql_del = mysql_query("delete from users where heraldid = '".$resultset['cells'][$i][1]."'", $this->_local);
+							$sql_del = mysqli_query($this->_local,"delete from users where heraldid = '".$resultset['cells'][$i][1]."'");
 							if (! $sql_del){
 								return "Could not delete user from local database";
 							} else {
@@ -228,14 +230,14 @@ class local implements database {
 							//print "<h2>i = ".$i.", Looking up ".$resultset['cells'][$i][1];
 							//print_r($student);
 							//print "</h2>";
-							$sql_sequel = mysql_query("INSERT INTO `users` ( `heraldid` , `prv_id` , `usr_name` , `usr_dept` , `usr_email` )
+							$sql_sequel = mysqli_query($this->_local,"INSERT INTO `users` ( `heraldid` , `prv_id` , `usr_name` , `usr_dept` , `usr_email` )
 								VALUES (
-								'".$resultset['cells'][$i][1]."', '".$student[3]."', '".mysql_real_escape_string($student[0], $this->_local)."', '".mysql_real_escape_string($student[1], $this->_local)."', '".mysql_real_escape_string($student[2], $this->_local)."'
-								)", $this->_local);
+								'".$resultset['cells'][$i][1]."', '".$student[3]."', '".mysqli_real_escape_string($this->_local, $student[0])."', '".mysqli_real_escape_string($this->_local, $student[1])."', '".mysqli_real_escape_string($this->_local, $student[2])."'
+								)");
 							//MSDLT
 							echo "INSERT INTO `users` ( `heraldid` , `prv_id` , `usr_name` , `usr_dept` , `usr_email` )
 								VALUES (
-								'".$resultset['cells'][$i][1]."', '".$student[3]."', '".mysql_real_escape_string($student[0], $this->_local)."', '".mysql_real_escape_string($student[1], $this->_local)."', '".mysql_real_escape_string($student[2], $this->_local)."'
+								'".$resultset['cells'][$i][1]."', '".$student[3]."', '".mysqli_real_escape_string($this->_local, $student[0])."', '".mysqli_real_escape_string($this->_local, $student[1])."', '".mysqli_real_escape_string($this->_local, $student[2])."'
 								)";
 								//exit();
 							if (! $sql_sequel){
@@ -326,7 +328,7 @@ class local implements database {
 	function checkPerms($resultset){
 	
 		$sql_verify = $this->selectQuery("res_id", "resultsets", "heraldid = '".$_SESSION['user']."'");
-		while ($data_res = mysql_fetch_array($sql_verify)){ //Find resultsets that the user owns
+		while ($data_res = mysqli_fetch_array($sql_verify)){ //Find resultsets that the user owns
 			$resultsets_owned[] = $data_res['res_id'];
 		}
 		/*foreach($resultsets_owned as $thing){
@@ -349,10 +351,10 @@ class local implements database {
 	
 	function addReminder($res, $date, $msg){
 		
-		$sql = mysql_query("INSERT INTO `reminders` ( `rem_id` , `res_id` , `rem_date` , `rem_message` )
+		$sql = mysqli_query($this->_local,"INSERT INTO `reminders` ( `rem_id` , `res_id` , `rem_date` , `rem_message` )
 		VALUES (
-		NULL , '".$res."', FROM_UNIXTIME( '".$date."' ) , '".mysql_real_escape_string($msg, $this->_local)."'
-		)", $this->_local);
+		NULL , '".$res."', FROM_UNIXTIME( '".$date."' ) , '".mysqli_real_escape_string($this->_local, $msg)."'
+		)");
 
 		if (! $sql){
 			return false;
@@ -367,7 +369,7 @@ class local implements database {
 	function buildResultset($resultset, $user){
 	
 	$offset = 1;	
-	$sql = mysql_query("SELECT rsd_value
+	$sql = mysqli_query($this->_local,"SELECT rsd_value
 	FROM resultsetfieldsdata
 	INNER JOIN resultsetstudents ON resultsetfieldsdata.rss_id = resultsetstudents.rss_id
 	WHERE heraldid = '".$user."'
@@ -375,17 +377,17 @@ class local implements database {
 	AND resultsetstudents.res_id = ".$resultset."
 	ORDER BY rsf_offset");
 	
-	while ($data = mysql_fetch_array($sql)){
+	while ($data = mysqli_fetch_array($sql)){
 	
 		$offset++;
-		$sql2 = mysql_query("SELECT rsf_title, rsf_heading
+		$sql2 = mysqli_query($this->_local,"SELECT rsf_title, rsf_heading
 		FROM resultsetfields
 		WHERE res_id =".$resultset."
 		AND rsf_offset =".$offset."
 		ORDER BY rsf_id");
-		$numheaders = mysql_num_rows($sql2);
+		$numheaders = mysqli_num_rows($sql2);
 		$headcount = 0;
-		while ($data2 = mysql_fetch_array($sql2)){
+		while ($data2 = mysqli_fetch_array($sql2)){
 			
 			//$html .= '<h'.$h.'>'.$data2['rsf_title'].'</h'.$h.'>';
 			$html .= '<h'.$data2['rsf_heading'].'>'.$data2['rsf_title'];
@@ -409,7 +411,7 @@ class local implements database {
 	function titleResultset($resultset){
 	
 		$sql = $this->selectQuery("res_name", "resultsets", "res_id = ".$resultset);
-		$array = mysql_fetch_array($sql);
+		$array = mysqli_fetch_array($sql);
 		return $array[0];	
 	
 	}
@@ -420,7 +422,7 @@ class local implements database {
 		$remote = new remote();
 				
 		$sql = $this->selectQuery("*", "resultsets", "res_id = ".$resultset);
-		while ($data = mysql_fetch_array($sql)){
+		while ($data = mysqli_fetch_array($sql)){
 			$html = '<p><strong>'.$data['res_name'].'</strong>';
 			if ($data['heraldid'] != $_SESSION['user']){
 				$html .= '<br />Created by ';
@@ -447,18 +449,18 @@ class local implements database {
 			$sql5 = $remote->selectQuery("heraldID", "SurveyInstanceParticipants", "surveyInstanceID = ".$surveyinstanceid." AND status = 2"); //RABBIT
 						
 			$thingies = array();
-				while ($data5 = mysql_fetch_array($sql5)){
+				while ($data5 = mysqli_fetch_array($sql5)){
 					$thingies[] = $data5['heraldID'];
 				}
 			
 			$x = 0;
-			while ($data4 = mysql_fetch_array($sql6)){
+			while ($data4 = mysqli_fetch_array($sql6)){
 				if (in_array($data4['heraldid'], $thingies)){
 					$x++;
 				}
 			}
 			
-			$y = mysql_num_rows($sql3);
+			$y = mysqli_num_rows($sql3);
 			
 			$html .= '<p>Feedback is '.$x.' out of '.$y.' ('.round((($x/$y) * 100), 2).'%)</p>';
 			
@@ -469,10 +471,10 @@ class local implements database {
 			  <th width="25%"><div class="th">ID</div></th>
 			</tr>';
 			
-			while ($data2 = mysql_fetch_array($sql3)){
+			while ($data2 = mysqli_fetch_array($sql3)){
 				$sql4 = $remote->selectQuery("status", "SurveyInstanceParticipants", "heraldID = '".$data2['heraldid']."'
 				AND surveyInstanceID =".$surveyinstanceid);
-				$data3 = mysql_fetch_array($sql4);
+				$data3 = mysqli_fetch_array($sql4);
 				switch($data3['status']){
 					case "1":
 					$highlight = ' class = "amber"';
@@ -520,10 +522,10 @@ class local implements database {
 	
 	function addUser($heraldid, $name, $dept, $email, $pri){
 		
-		$sql = mysql_query("INSERT INTO `users` ( `heraldid` , `prv_id` , `usr_name` , `usr_dept` , `usr_email` )
+		$sql = mysqli_query($this->_local,"INSERT INTO `users` ( `heraldid` , `prv_id` , `usr_name` , `usr_dept` , `usr_email` )
 		VALUES (
-		'".$heraldid."', '".$pri."', '".mysql_real_escape_string($name, $this->_local)."', '".mysql_real_escape_string($dept, $this->_local)."', '".mysql_real_escape_string($email, $this->_local)."'
-		)", $this->_local);
+		'".$heraldid."', '".$pri."', '".mysqli_real_escape_string($this->_local, $name)."', '".mysqli_real_escape_string($this->_local, $dept)."', '".mysqli_real_escape_string($this->_local, $email)."'
+		)");
 		
 		if (! $sql){
 			return false;
@@ -539,13 +541,13 @@ class local implements database {
 	
 	function deleteUser($heraldid){
 		
-		$sql = mysql_query("DELETE FROM users WHERE heraldid = '".$heraldid."'", $this->_local);
+		$sql = mysqli_query($this->_local,"DELETE FROM users WHERE heraldid = '".$heraldid."'");
 		
 		if (! $sql){
 			return false;
 		} else {
-			$sql2 = mysql_query("select usr_name from users where heraldid = '".$heraldid."'");
-			$data = mysql_fetch_array($sql2);
+			$sql2 = mysqli_query($this->_local,"select usr_name from users where heraldid = '".$heraldid."'");
+			$data = mysqli_fetch_array($sql2);
 			$log = new log(1);
 			$log->writeLog("Deleted User ".$data['usr_name']." (".$heraldid.")");
 			return true;
@@ -555,7 +557,7 @@ class local implements database {
 	
 	function editUser($heraldid, $name, $dept, $email, $pri){
 	
-	$sql = mysql_query("UPDATE `users` SET `prv_id` = '".$pri."', `usr_name` = '".$name."',
+	$sql = mysqli_query($this->_local,"UPDATE `users` SET `prv_id` = '".$pri."', `usr_name` = '".$name."',
 	`usr_dept` = '".$dept."',
 	`usr_email` = '".$email."' WHERE `heraldid` = '".$heraldid."'");
 	
@@ -571,9 +573,9 @@ class local implements database {
 	
 	function editStudent($heraldid, $name, $dept, $email){
 	
-	$sql = mysql_query("UPDATE `users` SET `usr_name` = '".mysql_real_escape_string($name, $this->_local)."',
-`usr_dept` = '".mysql_real_escape_string($dept, $this->_local)."',
-`usr_email` = '".mysql_real_escape_string($email, $this->_local)."' WHERE `heraldid` = '".$heraldid."'");
+	$sql = mysqli_query($this->_local,"UPDATE `users` SET `usr_name` = '".mysqli_real_escape_string($this->_local, $name)."',
+`usr_dept` = '".mysqli_real_escape_string($this->_local, $dept)."',
+`usr_email` = '".mysqli_real_escape_string($this->_local, $email)."' WHERE `heraldid` = '".$heraldid."'");
 	
 	if (! $sql){
 			return false;
@@ -617,12 +619,12 @@ class local implements database {
 	
 		//print '<h1>msg = '.$msg.'</h1>';
 		
-		if (! mysql_query("UPDATE `reminders` SET `rem_date` = FROM_UNIXTIME( '".$date."' ) ,
-		`rem_message` = '".mysql_real_escape_string($msg, $this->_local)."' WHERE `reminders`.`rem_id` = ".$rem)){
+		if (! mysqli_query($this->_local,"UPDATE `reminders` SET `rem_date` = FROM_UNIXTIME( '".$date."' ) ,
+		`rem_message` = '".mysqli_real_escape_string($this->_local, $msg)."' WHERE `reminders`.`rem_id` = ".$rem)){
 			return '<p>Cannot edit Reminder.</p>';
 		} else {
-			$sql = mysql_query("select res_name, rem_date from reminders inner join resultsets on reminders.res_id = resultsets.res_id where rem_id = ".$rem);
-			$data = mysql_fetch_array($sql);
+			$sql = mysqli_query($this->_local,"select res_name, rem_date from reminders inner join resultsets on reminders.res_id = resultsets.res_id where rem_id = ".$rem);
+			$data = mysqli_fetch_array($sql);
 			
 			$log = new log(1);
 			$log->writeLog("Edited Reminder for ".$data['res_name']." (".date("jS M Y", $data['rem_date']).")");
@@ -647,12 +649,12 @@ NULL , '1', NOW( ) , 'hkjlhljkyklhklhklh'
 	//echo "select res_name, rem_date from reminders inner join resultsets on reminders.res_id = resultsets.res_id where rem_id = ".$rem;
 	
 	if ($virtual == null){
-		$sql = mysql_query("select res_name, rem_date from reminders inner join resultsets on reminders.res_id = resultsets.res_id where rem_id = ".$rem, $this->_local);
-		$data = mysql_fetch_array($sql);
+		$sql = mysqli_query($this->_local,"select res_name, rem_date from reminders inner join resultsets on reminders.res_id = resultsets.res_id where rem_id = ".$rem);
+		$data = mysqli_fetch_array($sql);
 		$log_entry = "Reminder for ".$data['res_name']." (".date("jS M Y", strtotime($data['rem_date'])).")";
 	
 		$log = new log(1);
-		if (! mysql_query("DELETE FROM reminders WHERE rem_id = ".$rem, $this->_local)){
+		if (! mysqli_query($this->_local,"DELETE FROM reminders WHERE rem_id = ".$rem)){
 			$log->writeLog("Cannot delete ".$log_entry);
 			return '<p>Reminder cannot be deleted.</p>';
 		} else {
@@ -673,7 +675,7 @@ $sql = $this->selectQuery("usr_name, usr_dept, usr_email, prv_id", "users", "her
 if (! $sql){
 			return false;
 		} else {
-				$data = mysql_fetch_array($sql);
+				$data = mysqli_fetch_array($sql);
 				$array[] = $data['usr_name'];
 				$array[] = $data['usr_dept'];
 				$array[] = $data['usr_email'];
@@ -696,9 +698,9 @@ function insertNotice($title, $detail, $prv){
 		$detail = '<p>'.$_POST['detail'].'</p>';
 	}
 		
-$sql = mysql_query("INSERT INTO `notices` ( `not_id` , `not_title` , `not_detail` , `not_date` , `not_prv` )
+$sql = mysqli_query($this->_local,"INSERT INTO `notices` ( `not_id` , `not_title` , `not_detail` , `not_date` , `not_prv` )
 VALUES (
-NULL , '".$title."', '".mysql_real_escape_string($detail, $this->_local)."', NOW( ) , '".$prv."'
+NULL , '".$title."', '".mysqli_real_escape_string($this->_local, $detail)."', NOW( ) , '".$prv."'
 )", $this->_local);
 
 if (! $sql){
@@ -720,10 +722,10 @@ function updateNotice($id, $title, $detail, $prv){
 		$detail = '<p>'.$_POST['detail'].'</p>';
 	}
 	
-$sql = mysql_query("UPDATE `notices` SET `not_title` = '".$title."',
-`not_detail` = '".mysql_real_escape_string($detail, $this->_local)."',
+$sql = mysqli_query($this->_local,"UPDATE `notices` SET `not_title` = '".$title."',
+`not_detail` = '".mysqli_real_escape_string($this->_local, $detail)."',
 `not_date` = NOW( ) ,
-`not_prv` = '".$prv."' WHERE `notices`.`not_id` =".$id." LIMIT 1", $this->_local);
+`not_prv` = '".$prv."' WHERE `notices`.`not_id` =".$id." LIMIT 1");
 
 if (! $sql){
 	$log = new log(1);
@@ -739,13 +741,13 @@ if (! $sql){
 
 	function __destruct() {
 	//	print "<p>Attempting to close MySQL connection...</p>";
-		if (! mysql_close()) {
+		if (! mysqli_close()) {
 			return "Unable to disconnect from database.";
 		}
 	}
 	
 	function repairTable($table){
-		if (! mysql_query("REPAIR TABLE ".$table, $this->_local)){
+		if (! mysqli_query($this->_local,"REPAIR TABLE ".$table)){
 			return false;
 		} else {
 			return true;
@@ -753,7 +755,7 @@ if (! $sql){
 	}
 	
 	function optimiseTable($table){
-		if (! mysql_query("OPTIMIZE TABLE ".$table, $this->_local)){
+		if (! mysqli_query($this->_local,"OPTIMIZE TABLE ".$table)){
 			return false;
 		} else {
 			return true;
@@ -783,33 +785,33 @@ if (! $sql){
 		$sql2 = $this->selectQuery("res_name, heraldid, usr_name, usr_email", "resultsets
 INNER JOIN users ON resultsets.heraldid = users.heraldid", "res_id = ".$res);
 
-		while ($data2 = mysql_fetch_array($sql2)){
+		while ($data2 = mysqli_fetch_array($sql2)){
 			$reply = $data2['usr_name'].' <'.$data2['usr_email'].'>';
 			$title = $data2['res_name'];
 		}
 		
-		if (! mysql_query("DELETE FROM resultsets WHERE res_id = ".$res, $this->_local)){
+		if (! mysqli_query($this->_local,"DELETE FROM resultsets WHERE res_id = ".$res)){
 			$log->writeLog("Cannot delete ".$title);
 			return $fail;
 		}
 		
 		$log->writeLog("Deleted ".$title);
 		
-		if (! mysql_query("DELETE FROM resultsetfieldsdata WHERE res_id = ".$res, $this->_local)){
+		if (! mysqli_query($this->_local,"DELETE FROM resultsetfieldsdata WHERE res_id = ".$res)){
 			$log->writeLog("Cannot delete data for ".$title);
 			return $fail;
 		}
 		
 		$log->writeLog("Deleted data for ".$title);
 		
-		if (! mysql_query("DELETE FROM resultsetfields WHERE res_id = ".$res, $this->_local)){
+		if (! mysqli_query($this->_local,"DELETE FROM resultsetfields WHERE res_id = ".$res)){
 			$log->writeLog("Cannot delete fields for ".$title);
 			return $fail;
 		}
 		
 		$log->writeLog("Deleted fields for ".$title);
 				
-		if (! mysql_query("DELETE FROM reminders WHERE res_id = ".$res, $this->_local)){
+		if (! mysqli_query($this->_local,"DELETE FROM reminders WHERE res_id = ".$res)){
 			$log->writeLog("Cannot delete Reminders for ".$title);
 			return $fail;
 		}
@@ -834,7 +836,7 @@ INNER JOIN users ON resultsets.heraldid = users.heraldid", "res_id = ".$res);
 			}
 		}*/
 		
-		if (! mysql_query("DELETE FROM resultsetstudents WHERE res_id = ".$res, $this->_local)){
+		if (! mysqli_query($this->_local,"DELETE FROM resultsetstudents WHERE res_id = ".$res)){
 			$log->writeLog("Cannot unlink Students for ".$title);
 			return $fail;
 		}
@@ -854,7 +856,7 @@ INNER JOIN users ON resultsets.heraldid = users.heraldid", "res_id = ".$res);
 		if (! isset($_POST['sendemail']))
 			{
 			$sql1 = $this->selectQuery("res_name", "resultsets", "res_id = ".$res);
-			while ($data1 = mysql_fetch_array($sql1))
+			while ($data1 = mysqli_fetch_array($sql1))
 				{
 				$title = $data1['res_name'];
 				}
@@ -868,7 +870,7 @@ INNER JOIN users ON resultsets.heraldid = users.heraldid", "res_id = ".$res);
 			{
 			$log = new log(1);
 			$sql1 = $this->selectQuery("res_name", "resultsets", "res_id = ".$res);
-			while ($data1 = mysql_fetch_array($sql1))
+			while ($data1 = mysqli_fetch_array($sql1))
 				{
 				$title = $data1['res_name'];
 				}
@@ -880,7 +882,7 @@ INNER JOIN users ON resultsets.heraldid = users.heraldid", "res_id = ".$res);
 			$file = fopen($filename, "r");
 			$message = fread($file, filesize($filename));
 			$sql2 = $this->selectQuery("resultsetstudents.heraldid, usr_name, usr_email", "users INNER JOIN resultsetstudents ON resultsetstudents.heraldid = users.heraldid", "res_id = ".$res);
-			while ($data2 = mysql_fetch_array($sql2))
+			while ($data2 = mysqli_fetch_array($sql2))
 				{
 				$to = $data2['usr_name']." (".$data2['heraldid'].") <".$data2['usr_email'].">";
 				if (!$email->send($to, $reply, $subject, $message))

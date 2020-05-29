@@ -6,38 +6,39 @@ class remote implements database {
 	
 	function __construct() {
 		//print "<p>Attempting to open MySQL connection...</p>";
-		$this->_remote = mysql_connect(remote_host, remote_user, remote_password);
+		$this->_remote = mysqli_connect(remote_host, remote_user, remote_password, remote_database);
 		
 		if (! $this->_remote) {
 			return "Unable to connect to database.";
 		}
 		
-		if (! mysql_select_db(remote_database)) {
-			return "Unable to select Feedback gets Results database.";
-		}
+		//if (! mysql_select_db(remote_database)) {
+		//	return "Unable to select Feedback gets Results database.";
+		//}
 		
-		mysql_query("SET NAMES 'utf8'");
+		//mysql_query("SET NAMES 'utf8'");
+		mysqli_set_charset($this->_remote, 'utf8mb4');
 		//print("<h1>Local Connection Created</h1>");
 		//return "Connection successful";
 	}
 	
 	function selectQuery($fields, $from, $where = null) {
 		if ($where == null){
-			return mysql_query("SELECT ".$fields." FROM ".$from, $this->_remote);
+			return mysqli_query($this->_remote, "SELECT ".$fields." FROM ".$from);
 		} else {
-			return mysql_query("SELECT ".$fields." FROM ".$from." WHERE ".$where, $this->_remote);
+			return mysqli_query($this->_remote, "SELECT ".$fields." FROM ".$from." WHERE ".$where);
 		}
 	}
 	
 	function countQuery($field, $from, $where = null){
 	//Counts the number of records in a table, optionally based on criteria; Returns integer
 		if ($where == null){
-			$sql = mysql_query("SELECT COUNT(".$field.") FROM ".$from, $this->_remote);
-			$data = mysql_fetch_row($sql);
+			$sql = mysqli_query($this->_remote, "SELECT COUNT(".$field.") FROM ".$from);
+			$data = mysqli_fetch_row($sql);
 			return $data[0];
 		} else {
-			$sql = mysql_query("SELECT COUNT(".$field.") FROM ".$from." WHERE ".$where, $this->_remote);
-			$data = mysql_fetch_row($sql);
+			$sql = mysqli_query($this->_remote, "SELECT COUNT(".$field.") FROM ".$from." WHERE ".$where);
+			$data = mysqli_fetch_row($sql);
 			return $data[0];
 		}
 	}
@@ -46,12 +47,12 @@ class remote implements database {
 	
 		
 		
-		$sql = mysql_query("select surveyInstanceID, title from SurveyInstances where finishDate > now() OR finishDate IS NULL", $this->_remote);
+		$sql = mysqli_query($this->_remote, "select surveyInstanceID, title from SurveyInstances where finishDate > now() OR finishDate IS NULL");
 		
 		$local = new local();
 		$used = array();
 		$sql2 = $local->selectQuery("surveyinstanceid", "resultsets");
-		while ($data2 = mysql_fetch_array($sql2)){
+		while ($data2 = mysqli_fetch_array($sql2)){
 			$used[] = $data2['surveyinstanceid'];
 		}
 		
@@ -59,7 +60,7 @@ class remote implements database {
 		<select name="select">';
 
 		$i = 0;
-		while ($data = mysql_fetch_array($sql)){
+		while ($data = mysqli_fetch_array($sql)){
 				if (! in_array($data['surveyInstanceID'], $used)){
 				$html .= '<option value="'.$data['surveyInstanceID'].'">'.$data['title'].'</option>';
 				$i++;
@@ -81,14 +82,14 @@ class remote implements database {
 	
 	function surveyName($surveyinstance){
 		
-		$sql = mysql_query("select Surveys.title from Surveys inner join SurveyInstances on 
-		Surveys.surveyID = SurveyInstances.surveyID where surveyInstanceID = ".$surveyinstance, $this->_remote);
+		$sql = mysqli_query($this->_remote, "select Surveys.title from Surveys inner join SurveyInstances on 
+		Surveys.surveyID = SurveyInstances.surveyID where surveyInstanceID = ".$surveyinstance);
 		
-		while ($data = mysql_fetch_array($sql)){
+		while ($data = mysqli_fetch_array($sql)){
 			$html .= $data['title'];
 		}
 		
-		if (mysql_num_rows($sql) == 0){
+		if (mysqli_num_rows($sql) == 0){
 			return "Unknown";
 		} else {
 			return $html;
@@ -99,13 +100,13 @@ class remote implements database {
 	
 	function surveyInstanceName($surveyinstance){
 	
-		$sql = mysql_query("SELECT title FROM SurveyInstances WHERE surveyInstanceID = ".$surveyinstance, $this->_remote);
+		$sql = mysqli_query($this->_remote, "SELECT title FROM SurveyInstances WHERE surveyInstanceID = ".$surveyinstance);
 		
-		while ($data = mysql_fetch_array($sql)){
+		while ($data = mysqli_fetch_array($sql)){
 			$html .= $data['title'];
 		}
 		
-		if (mysql_num_rows($sql) == 0){
+		if (mysqli_num_rows($sql) == 0){
 			return "Unknown";
 		} else {
 			return $html;
@@ -115,13 +116,13 @@ class remote implements database {
 	
 	function surveyInstanceFinish($surveyinstance){
 	
-		$sql = mysql_query("SELECT finishDate FROM SurveyInstances WHERE surveyInstanceID = ".$surveyinstance, $this->_remote);
+		$sql = mysqli_query($this->_remote, "SELECT finishDate FROM SurveyInstances WHERE surveyInstanceID = ".$surveyinstance);
 		
-		while ($data = mysql_fetch_array($sql)){
+		while ($data = mysqli_fetch_array($sql)){
 			$html = $data['finishDate'];
 		}
 		
-		if (mysql_num_rows($sql) == 0){
+		if (mysqli_num_rows($sql) == 0){
 			return "Unknown";
 		} else {
 			return date("jS M Y", strtotime($html));
@@ -130,13 +131,13 @@ class remote implements database {
 	}
 	
 	function finishDate($surveyinstance){
-		$sql = mysql_query("select finishDate from SurveyInstances where surveyInstanceID = ".$surveyinstance, $this->_remote);
+		$sql = mysqli_query($this->_remote, "select finishDate from SurveyInstances where surveyInstanceID = ".$surveyinstance);
 		
-		while ($data = mysql_fetch_array($sql)){
+		while ($data = mysqli_fetch_array($sql)){
 			$value = $data['finishDate'];
 		}
 		
-		if (mysql_num_rows($sql) > 0){
+		if (mysqli_num_rows($sql) > 0){
 			return $value;
 		} else {
 			return false;
@@ -185,7 +186,7 @@ class remote implements database {
 
 	function __destruct() {
 		//print "<p>Attempting to close MySQL connection...</p>";
-		if (! mysql_close($this->_remote)) {
+		if (! mysqli_close($this->_remote)) {
 			return "Unable to disconnect from database.";
 		}
 	}

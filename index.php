@@ -56,7 +56,7 @@ if(isset($_GET['rem']) && ! isset($_GET['res']) && ! isset($_GET['add']) && ! is
 		$local = new local();
 		$sql = $local->selectQuery("surveyinstanceid", "resultsets", "res_id = ".$_POST['res']);
 		$reminders = new reminder();
-		while ($data = mysql_fetch_array($sql)){
+		while ($data = mysqli_fetch_array($sql)){
 			$page->addToPage($reminders->selectReminders($_POST['res'], $data['surveyinstanceid']));
 		}
 	
@@ -131,7 +131,7 @@ if(isset($_GET['res']) && isset($_GET['view']) && ! isset($_GET['xls'])){
 				"resultsets INNER JOIN users ON resultsets.heraldid = users.heraldid",
 				"res_id = ".$_GET['res']);
 				
-				while ($data_gnarr = mysql_fetch_array($sql_gnarr)){
+				while ($data_gnarr = mysqli_fetch_array($sql_gnarr)){
 					$res_name = $data_gnarr['res_name'];
 					$reply = $data_gnarr['usr_name'].' <'.$data_gnarr['usr_email'].'>';
 				}

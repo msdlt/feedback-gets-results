@@ -16,7 +16,7 @@ class notice {
 		$sql = $local->selectQuery("`not_title` , `not_detail` , `not_date`", "notices", "not_prv <=".$this->_pri." ORDER BY not_date DESC");
 		$html = '';
 		
-		while ($data = mysql_fetch_array($sql)){
+		while ($data = mysqli_fetch_array($sql)){
 		
 		//if ($data['not_prv'] < $this->_pri){		
 			$html .= '<div class="message"><p><strong>'.$data['not_title'].'</strong> <em>'.date("jS M Y", strtotime($data['not_date'])).'</em></p>'.$data['not_detail'].'</div>'; 
@@ -46,7 +46,7 @@ class notice {
 		$sql = $local->selectQuery("not_id, not_title, not_detail, not_date, not_prv, prv_name", "notices AS n
 		INNER JOIN priviliges AS p ON n.not_prv = p.prv_id ORDER BY not_date DESC");
 		
-		while ($data = mysql_fetch_array($sql)){
+		while ($data = mysqli_fetch_array($sql)){
 			//Trim the notice detail
 			$detail = trim($data['not_detail'], "\<p>\</p>");
 			$detail = str_split($detail, 20);
@@ -62,7 +62,7 @@ class notice {
 		
 		$html .= '</table></p>';
 		
-		if (mysql_num_rows($sql) == 0){
+		if (inum_rows($sql) == 0){
 			return '<p>No Notices found</p>';
 		} else {		
 			return $html;
@@ -87,7 +87,7 @@ class notice {
 		} else {
 		
 			$sql = $local->selectQuery("*", "notices", "not_id = ".$id);
-			while ($data = mysql_fetch_array($sql)){
+			while ($data = mysqli_fetch_array($sql)){
 				$html = $this->formNotice($id);
 			}
 			
@@ -135,7 +135,7 @@ class notice {
 	//Forgot to template this so it's hard-coded... :-P
 	if ($id != null){
 		$sql = $local->selectQuery("not_title, not_detail, not_prv", "notices", "not_id = ".$id);
-		$data = mysql_fetch_array($sql);
+		$data = mysqli_fetch_array($sql);
 		$title = $data['not_title'];
 		$detail = $data['not_detail'];
 		$prv = $data['not_prv'];
@@ -158,7 +158,7 @@ class notice {
 	  <textarea name="detail" cols="80" rows="20">'.$detail.'</textarea><br /><br />
 	  <select name="prv">';
 		$sql_prv = $local->selectQuery("*", "priviliges");
-		while ($data_prv = mysql_fetch_array($sql_prv)){
+		while ($data_prv = mysqli_fetch_array($sql_prv)){
 			if ($data_prv['prv_id'] == $prv){
 				$selected = ' selected';
 			} else {

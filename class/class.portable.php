@@ -17,7 +17,7 @@ $margh = new local();
 
 $sql = $margh->selectQuery("heraldid", "resultsetstudents", "res_id = ".$resultset);
 
-while ($data = mysql_fetch_array($sql)){
+while ($data = mysqli_fetch_array($sql)){
 	$this->buildPDF($resultset, $data['heraldid']);
 }
 
@@ -33,7 +33,7 @@ function buildPDF($resultset, $user){
 	
 	
 	$sql = $blah->selectQuery("res_name", "resultsets", "res_id = ".$resultset);
-	while($data = mysql_fetch_array($sql)){
+	while($data = mysqli_fetch_array($sql)){
 		$res_name = $data['res_name'];
 	}	
 	
@@ -52,15 +52,15 @@ function buildPDF($resultset, $user){
 	AND resultsetstudents.res_id = ".$resultset."
 	ORDER BY rsf_offset");
 	
-	while ($data = mysql_fetch_array($sql)){
+	while ($data = mysqli_fetch_array($sql)){
 		
 		$offset++;
 		$sql2 = $blah->selectQuery("rsf_title, rsf_heading", "resultsetfields", "res_id =".$resultset."
 		AND rsf_offset =".$offset."
 		ORDER BY rsf_id");
-		$numheaders = mysql_num_rows($sql2);
+		$numheaders = mysqli_num_rows($sql2);
 		$headcount = 0;		
-		while ($data2 = mysql_fetch_array($sql2)){
+		while ($data2 = mysqli_fetch_array($sql2)){
 			
 			//$html .= '<p class="h'.$data2['rsf_heading'].'">'.$data2['rsf_title']."</p>";
 			//$html .= '<h'.$h.'>'.$data2['rsf_title'].'</h'.$h.'>';
