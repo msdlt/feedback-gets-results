@@ -11,8 +11,6 @@ print '<p>-- FINISH --</p>';*/
 
 //Perform security checks on provided switches
 $card = new access($_GET);
-echo('dO i EVEN GET HERE');
-exit();
 swipe($card);
 
 //Create new draw object
