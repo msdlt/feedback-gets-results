@@ -383,10 +383,10 @@ if(isset($_GET['not'])){
 
 //LOGOUT
 if(isset($_GET['logout'])){
-	echo('Im logging out');
-	exit();
-	//session_destroy();
-	//header("Location: https://webauth.ox.ac.uk/logout");
+	//echo('Im logging out');
+	//exit();
+	session_destroy();
+	header("Location: https://webauth.ox.ac.uk/logout");
 }
 
 if(isset($_GET['resdel'])){
