@@ -741,7 +741,7 @@ if (! $sql){
 
 	function __destruct() {
 	//	print "<p>Attempting to close MySQL connection...</p>";
-		if (! mysqli_close()) {
+		if (! mysqli_close($this->_local)) {
 			return "Unable to disconnect from database.";
 		}
 	}
