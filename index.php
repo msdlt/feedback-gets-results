@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 require_once("./inc/header.inc");
 
@@ -384,8 +383,8 @@ if(isset($_GET['not'])){
 
 //LOGOUT
 if(isset($_GET['logout'])){
-	session_destroy();
-	header("Location: https://webauth.ox.ac.uk/logout");
+	//session_destroy();
+	//header("Location: https://webauth.ox.ac.uk/logout");
 }
 
 if(isset($_GET['resdel'])){
