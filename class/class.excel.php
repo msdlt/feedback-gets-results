@@ -1,5 +1,7 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
 class excel {
 
 function upload(){
@@ -40,7 +42,7 @@ function upload(){
 	//require_once './phpxls/reader.php';
 
 	require_once("vendor/autoload.php"); 
-	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	
 		
 	//$resultset = new Spreadsheet_Excel_Reader();
 	//$resultset->setOutputEncoding('CP1251');
