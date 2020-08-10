@@ -37,11 +37,14 @@ function upload(){
 	}
 
 	
-	require_once './phpxls/reader.php';
+	//require_once './phpxls/reader.php';
+
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 	
-	$resultset = new Spreadsheet_Excel_Reader();
-	$resultset->setOutputEncoding('CP1251');
-	$resultset->setUTFEncoder('mb');
+	//$resultset = new Spreadsheet_Excel_Reader();
+	//$resultset->setOutputEncoding('CP1251');
+	//$resultset->setUTFEncoder('mb');
 	if (! is_uploaded_file($_FILES['excel']['tmp_name'])) {
 		//print "Image not transferred to temporary directory";
 	}
@@ -56,11 +59,14 @@ function upload(){
 		$log->writeLog("Could not Upload ".basename($_FILES['excel']['name']));
 		//print "Image cannot be moved to permanent directory";
 	}
-	$resultset->read($uploaddir . basename($_FILES['excel']['name']));
+	//$resultset->read($uploaddir . basename($_FILES['excel']['name']));
 	//$resultset->read($_FILES['excel']['tmp_name']);
-	
+
+	$resultset = \PhpOffice\PhpSpreadsheet\IOFactory::load($uploaddir . basename($_FILES['excel']['name']));
 		
-	return $resultset->sheets[0];
+	//return $resultset->sheets[0];
+	return $resultset->setActiveSheetIndex(0);
+
 	//return "bonobo";
 	
 }
