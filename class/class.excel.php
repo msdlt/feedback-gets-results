@@ -14,7 +14,8 @@ function upload(){
 		$append = 2;
 		$temp_source_file = $_FILES['excel']['name'];
 		while (file_exists("./uploads/".$_FILES['excel']['name'])) {
-			list($f_name, $f_ext) = split('[.]', $temp_source_file);
+			//list($f_name, $f_ext) = split('[.]', $temp_source_file);
+			list($f_name, $f_ext) = explode('[.]', $temp_source_file);
 			$_FILES['excel']['name'] = $f_name."_".$append.".".$f_ext;
 			$append++;
 		}
