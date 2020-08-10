@@ -39,9 +39,8 @@ function upload(){
 	
 	//require_once './phpxls/reader.php';
 
-	use PhpOffice\PhpSpreadsheet\Spreadsheet;
-	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-	
+	require_once './PhpSpreadsheet/Spreadsheet.php';
+		
 	//$resultset = new Spreadsheet_Excel_Reader();
 	//$resultset->setOutputEncoding('CP1251');
 	//$resultset->setUTFEncoder('mb');
